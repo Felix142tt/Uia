@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Was wir brauchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4EFE4;
+    --card: #FBF8F1;
+    --ink: #221D17;
+    --muted: #7A6F62;
+    --line: #DDD4C3;
+    --accent: #D9482B;
+    --accent-ink: #FFFFFF;
+    --moss: #3E5C4A;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1A1714;
+      --card: #24201B;
+      --ink: #F1E9DA;
+      --muted: #A39684;
+      --line: #3A332B;
+      --accent: #F0684A;
+      --accent-ink: #1A1714;
+      --moss: #8FB49B;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1A1714;
+    --card: #24201B;
+    --ink: #F1E9DA;
+    --muted: #A39684;
+    --line: #3A332B;
+    --accent: #F0684A;
+    --accent-ink: #1A1714;
+    --moss: #8FB49B;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px; line-height: 1.5;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 {
+    font-family: "Newsreader", Georgia, "Times New Roman", serif;
+    font-weight: 700; font-size: clamp(2.2rem, 7vw, 3rem);
+    line-height: 1.05; margin: 0 0 8px; letter-spacing: -0.01em;
+  }
+  h1 span { color: var(--accent); }
+  h2, .section-title {
+    font-family: "Newsreader", Georgia, serif; font-size: 1.35rem; font-weight: 600; margin: 0;
+  }
+  .lead { color: var(--muted); margin: 0 0 28px; max-width: 46ch; }
+  .hint { font-size: 0.85rem; color: var(--muted); margin: 0; }
+  .error { color: var(--accent); font-size: 0.9rem; margin: 0; min-height: 1.2em; }
+  .hidden { display: none !important; }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; display: grid; gap: 14px; margin-bottom: 16px;
+  }
+  label { display: grid; gap: 6px; font-size: 0.9rem; color: var(--muted); }
+  input, textarea {
+    font: inherit; color: var(--ink); background: var(--paper);
+    border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; width: 100%;
+  }
+  input.code { font-size: 1.4rem; letter-spacing: 0.2em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+  textarea { min-height: 84px; resize: vertical; }
+  input:focus-visible, textarea:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .row { display: grid; grid-template-columns: 1fr 140px; gap: 14px; }
+
+  button {
+    font: inherit; cursor: pointer; border-radius: 999px; border: 1px solid var(--ink);
+    padding: 10px 18px; background: transparent; color: var(--ink);
+  }
+  button.primary { background: var(--ink); color: var(--paper); justify-self: start; }
+  button.vote[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button.small { padding: 6px 12px; font-size: 0.85rem; border-color: var(--line); color: var(--muted); }
+  button:disabled { opacity: 0.5; cursor: default; }
+
+  .group-head {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+    border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line);
+    padding: 14px 0; margin-bottom: 20px;
+  }
+  .code-box { text-align: right; }
+  .code-box .label { font-size: 0.8rem; color: var(--muted); }
+  .code-box .code {
+    font-family: "Newsreader", Georgia, serif; font-size: 1.8rem; font-weight: 600;
+    letter-spacing: 0.15em; font-variant-numeric: tabular-nums;
+  }
+  .total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; font-variant-numeric: tabular-nums; }
+  .total strong { font-family: "Newsreader", Georgia, serif; font-size: 1.5rem; font-weight: 600; }
+
+  .items { display: grid; gap: 16px; margin-top: 16px; }
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 10px; }
+  .item-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .item h3 { margin: 0; font-family: "Newsreader", Georgia, serif; font-size: 1.25rem; font-weight: 600; }
+  .price { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--moss); white-space: nowrap; }
+  .meta { font-size: 0.85rem; color: var(--muted); }
+  .reason { margin: 0; }
+  .item-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .empty { color: var(--muted); font-style: italic; padding: 24px 0; }
+
+  @media (max-width: 480px) {
+    .row { grid-template-columns: 1fr; }
+    .code-box { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Was wir <span>brauchen</span></h1>
+
+  <!-- Startansicht: Gruppe erstellen oder beitreten -->
+  <section id="start">
+    <p class="lead">Erstelle eine Gruppe und schick den Code an die anderen, oder tritt mit einem Code einer bestehenden Gruppe bei.</p>
+
+    <div class="panel">
+      <h2>Neue Gruppe</h2>
+      <label>
+        Name der Gruppe
+        <input id="newGroupName" type="text" maxlength="60" placeholder="z. B. WG Küche oder Familie Schmidt">
+      </label>
+      <button class="primary" id="createBtn" type="button">Gruppe erstellen</button>
+    </div>
+
+    <div class="panel">
+      <h2>Mit Code beitreten</h2>
+      <label>
+        Gruppencode
+        <input id="joinCode" class="code" type="text" maxlength="6" autocomplete="off" placeholder="ABC123">
+      </label>
+      <button class="primary" id="joinBtn" type="button">Beitreten</button>
+    </div>
+
+    <p class="error" id="startError" role="alert"></p>
+  </section>
+
+  <!-- Gruppenansicht -->
+  <section id="group" class="hidden">
+    <div class="group-head">
+      <div>
+        <h2 id="groupTitle"></h2>
+        <p class="hint" style="margin-top:4px">Sortiert nach Stimmen</p>
+      </div>
+      <div class="code-box">
+        <div class="label">Gruppencode zum Teilen</div>
+        <div class="code" id="groupCode"></div>
+        <button class="small" id="copyBtn" type="button" style="margin-top:6px">Code kopieren</button>
+        <button class="small" id="copyLinkBtn" type="button" style="margin-top:6px">Link kopieren</button>
+      </div>
+    </div>
+
+    <div class="total">
+      <span>Summe aller Wünsche</span>
+      <strong id="total">0,00 €</strong>
+    </div>
+
+    <div class="panel">
+      <h2>Neuen Wunsch eintragen</h2>
+      <label>
+        Dein Name
+        <input id="myName" type="text" maxlength="40" autocomplete="given-name" placeholder="z. B. Anna">
+      </label>
+      <div class="row">
+        <label>
+          Was brauchst du?
+          <input id="title" type="text" maxlength="80" placeholder="z. B. Staubsauger">
+        </label>
+        <label>
+          Preis (€)
+          <input id="price" type="text" inputmode="decimal" placeholder="0,00">
+        </label>
+      </div>
+      <label>
+        Warum sollten wir das kaufen?
+        <textarea id="reason" maxlength="400" placeholder="Was passiert ohne das, und warum genau dieses?"></textarea>
+      </label>
+      <p class="error" id="formError" role="alert"></p>
+      <p class="hint" id="quota"></p>
+      <button class="primary" id="addBtn" type="button">Hinzufügen</button>
+    </div>
+
+    <p class="error" id="voteError" role="alert"></p>
+    <div class="items" id="items"></div>
+
+    <p style="margin-top:32px"><button class="small" id="leaveBtn" type="button">Gruppe verlassen</button></p>
+  </section>
+
+  <p class="error" id="fatal" role="alert"></p>
+</main>
+
+<script>
+(function () {
+  var STORAGE_KEY = "wunschliste-gruppe-v1";
+  var MAX_PER_PERSON = 3;
+  var ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+  var db = null;
+  var uid = null;
+  var groupCode = null;
+  var groupName = "";
+  var myName = "";
+  var items = [];
+  var votes = [];
+  var unsubs = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function loadLocal() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
+  }
+  function saveLocal() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ code: groupCode, name: myName }));
+    } catch (e) { /* kein lokaler Speicher */ }
+  }
+
+  function randomId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+  function randomCode() {
+    var s = "";
+    for (var i = 0; i < 6; i++) s += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+    return s;
+  }
+  function parsePrice(text) {
+    var cleaned = String(text || "").trim().replace(/€/g, "").replace(/\s/g, "").replace(",", ".");
+    if (cleaned === "") return null;
+    if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) return NaN;
+    return Math.round(parseFloat(cleaned) * 100) / 100;
+  }
+  function formatEuro(v) {
+    return v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
+  }
+  function setMsg(id, msg) { $(id).textContent = msg || ""; }
+  function errText(e) {
+    if (e && e.code === "quota_exceeded") return "Der Speicher ist voll. Lösche alte Einträge und versuch es erneut.";
+    if (e && e.code === "revoked") return "Du hast keinen Zugriff mehr auf diese Gruppe.";
+    if (e && e.code === "invalid_argument") return "Dein Zugriff reicht dafür nicht aus.";
+    return "Das hat leider nicht geklappt. Versuch es gleich noch einmal.";
+  }
+
+  function showStart() {
+    $("start").classList.remove("hidden");
+    $("group").classList.add("hidden");
+  }
+  function showGroup() {
+    $("start").classList.add("hidden");
+    $("group").classList.remove("hidden");
+    $("groupTitle").textContent = groupName || "Unsere Gruppe";
+    $("groupCode").textContent = groupCode;
+    $("myName").value = myName;
+  }
+
+  function stopListening() {
+    unsubs.forEach(function (f) { try { f(); } catch (e) {} });
+    unsubs = [];
+    items = [];
+    votes = [];
+  }
+
+  function enterGroup(code, name) {
+    stopListening();
+    groupCode = code;
+    groupName = name || "";
+    saveLocal();
+
+    unsubs.push(db.collection("groups/" + code + "/items").onSnapshot(function (snap) {
+      items = snap.docs.filter(function (d) { return d.exists; })
+        .map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      render();
+    }, function (e) { setMsg("voteError", errText(e)); }));
+
+    unsubs.push(db.collection("groups/" + code + "/votes").onSnapshot(function (snap) {
+      votes = snap.docs.filter(function (d) { return d.exists; })
+        .map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      render();
+    }, function (e) { setMsg("voteError", errText(e)); }));
+
+    showGroup();
+    render();
+  }
+
+  async function createGroup() {
+    setMsg("startError", "");
+    var name = $("newGroupName").value.trim();
+    if (!name) return setMsg("startError", "Gib deiner Gruppe einen Namen.");
+    try {
+      var code = randomCode();
+      var ref = db.doc("groups/" + code);
+      if ((await ref.get()).exists) code = randomCode();
+      await db.doc("groups/" + code).set({ name: name, created: Date.now(), createdBy: uid });
+      enterGroup(code, name);
+    } catch (e) {
+      setMsg("startError", errText(e));
+    }
+  }
+
+  async function joinGroup() {
+    setMsg("startError", "");
+    var code = $("joinCode").value.trim().toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(code)) return setMsg("startError", "Der Code hat 6 Zeichen, zum Beispiel ABC123.");
+    try {
+      var snap = await db.doc("groups/" + code).get();
+      if (!snap.exists) return setMsg("startError", "Diesen Code gibt es nicht. Prüf, ob er stimmt.");
+      enterGroup(code, (snap.data() || {}).name || "");
+    } catch (e) {
+      setMsg("startError", errText(e));
+    }
+  }
+
+  function leaveGroup() {
+    stopListening();
+    groupCode = null;
+    groupName = "";
+    saveLocal();
+    setMsg("startError", "");
+    showStart();
+  }
+
+  function countFor(id) {
+    return items.filter(function (it) { return it.ownerId === id; }).length;
+  }
+
+  function updateQuota() {
+    var q = $("quota");
+    if (!myName) { q.textContent = "Trag oben deinen Namen ein, dann kannst du loslegen."; return; }
+    var left = MAX_PER_PERSON - countFor(uid);
+    q.textContent = left > 0
+      ? "Du kannst noch " + left + (left === 1 ? " Sache" : " Sachen") + " eintragen."
+      : "Du hast schon 3 Sachen eingetragen. Lösche eine, um eine neue einzutragen.";
+  }
+
+  async function addItem() {
+    setMsg("formError", "");
+    var name = $("myName").value.trim();
+    var title = $("title").value.trim();
+    var priceRaw = $("price").value;
+    var reason = $("reason").value.trim();
+
+    if (!name) return setMsg("formError", "Bitte gib deinen Namen ein.");
+    if (!title) return setMsg("formError", "Schreib auf, was du brauchst.");
+    var price = parsePrice(priceRaw);
+    if (price === null) return setMsg("formError", "Gib einen Preis ein, zum Beispiel 49,99.");
+    if (Number.isNaN(price)) return setMsg("formError", "Der Preis passt nicht. Nutze Zahlen wie 49,99.");
+    if (!reason) return setMsg("formError", "Schreib kurz, warum wir das brauchen.");
+    if (countFor(uid) >= MAX_PER_PERSON) return setMsg("formError", "Du hast schon 3 Sachen eingetragen. Lösche zuerst eine.");
+
+    myName = name;
+    saveLocal();
+    var id = randomId();
+    try {
+      await db.collection("groups/" + groupCode + "/items").doc(id).set({
+        title: title, price: price, reason: reason,
+        ownerId: uid, ownerName: name, created: Date.now()
+      });
+      $("title").value = "";
+      $("price").value = "";
+      $("reason").value = "";
+    } catch (e) {
+      setMsg("formError", errText(e));
+    }
+  }
+
+  async function toggleVote(item) {
+    setMsg("voteError", "");
+    if (item.ownerId === uid) return setMsg("voteError", "Du kannst nicht für deinen eigenen Wunsch stimmen.");
+    var name = $("myName").value.trim();
+    if (!name) return setMsg("voteError", "Bitte trag oben deinen Namen ein, bevor du abstimmst.");
+    myName = name;
+    saveLocal();
+
+    var voteId = item.id + "." + uid;
+    var has = votes.some(function (v) { return v.id === voteId; });
+    try {
+      var ref = db.doc("groups/" + groupCode + "/votes/" + voteId);
+      if (has) await ref.delete();
+      else await ref.set({ itemId: item.id, uid: uid, name: name });
+    } catch (e) {
+      setMsg("voteError", errText(e));
+    }
+  }
+
+  async function removeItem(item) {
+    setMsg("voteError", "");
+    try {
+      var related = votes.filter(function (v) { return v.itemId === item.id; });
+      for (var i = 0; i < related.length; i++) {
+        await db.doc("groups/" + groupCode + "/votes/" + related[i].id).delete();
+      }
+      await db.doc("groups/" + groupCode + "/items/" + item.id).delete();
+    } catch (e) {
+      setMsg("voteError", errText(e));
+    }
+  }
+
+  function render() {
+    if (!groupCode) return;
+    updateQuota();
+
+    var sum = items.reduce(function (acc, it) { return acc + it.price; }, 0);
+    $("total").textContent = formatEuro(sum);
+
+    var list = $("items");
+    list.textContent = "";
+    if (items.length === 0) {
+      list.appendChild(el("p", "empty", "Noch nichts eingetragen. Sei die erste Person."));
+      return;
+    }
+
+    var sorted = items.slice().sort(function (a, b) {
+      var va = votesFor(a.id).length, vb = votesFor(b.id).length;
+      if (vb !== va) return vb - va;
+      return a.price - b.price;
+    });
+
+    sorted.forEach(function (it) {
+      var mine = votesFor(it.id);
+      var voted = mine.some(function (v) { return v.uid === uid; });
+      var own = it.ownerId === uid;
+
+      var card = el("article", "item");
+      var head = el("div", "item-head");
+      head.appendChild(el("h3", null, it.title));
+      head.appendChild(el("span", "price", formatEuro(it.price)));
+      card.appendChild(head);
+
+      card.appendChild(el("div", "meta", "Vorgeschlagen von " + (it.ownerName || "jemandem")));
+      if (it.reason) card.appendChild(el("p", "reason", it.reason));
+
+      var foot = el("div", "item-foot");
+      var voteBtn = el("button", "vote", (voted ? "Stimme zurückziehen" : "Ich will das") + " · " + mine.length);
+      voteBtn.className = "vote";
+      voteBtn.setAttribute("aria-pressed", voted ? "true" : "false");
+      voteBtn.setAttribute("aria-label", it.title + ": " + mine.length + " Stimmen");
+      if (own) {
+        voteBtn.disabled = true;
+        voteBtn.title = "Du kannst nicht für deinen eigenen Wunsch stimmen";
+      } else {
+        voteBtn.addEventListener("click", function () { toggleVote(it); });
+      }
+      foot.appendChild(voteBtn);
+
+      if (own) {
+        var del = el("button", "small", "Löschen");
+        del.addEventListener("click", function () { removeItem(it); });
+        foot.appendChild(del);
+      }
+      card.appendChild(foot);
+      list.appendChild(card);
+    });
+  }
+
+  function votesFor(itemId) {
+    return votes.filter(function (v) { return v.itemId === itemId; });
+  }
+
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(groupCode);
+      $("copyBtn").textContent = "Kopiert";
+      setTimeout(function () { $("copyBtn").textContent = "Code kopieren"; }, 1500);
+    } catch (e) {
+      $("copyBtn").textContent = "Code: " + groupCode;
+    }
+  }
+
+  var PAGE_URL = "https://claude.ai/artifact/QU6zQHRfUhV9MHtZYqWGdx";
+
+  async function copyLink() {
+    var text = "Tritt unserer Wunschliste bei: " + PAGE_URL + "\nGruppencode: " + groupCode;
+    var btn = $("copyLinkBtn");
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "Kopiert";
+    } catch (e) {
+      btn.textContent = "Kopieren nicht möglich";
+    }
+    setTimeout(function () { btn.textContent = "Link kopieren"; }, 1500);
+  }
+
+  function bind() {
+    $("createBtn").addEventListener("click", createGroup);
+    $("joinBtn").addEventListener("click", joinGroup);
+    $("joinCode").addEventListener("keydown", function (e) { if (e.key === "Enter") joinGroup(); });
+    $("addBtn").addEventListener("click", addItem);
+    $("copyBtn").addEventListener("click", copyCode);
+    $("copyLinkBtn").addEventListener("click", copyLink);
+    $("leaveBtn").addEventListener("click", leaveGroup);
+    $("myName").addEventListener("input", function () {
+      myName = this.value.trim();
+      saveLocal();
+      updateQuota();
+    });
+  }
+
+  async function init() {
+    bind();
+    var saved = loadLocal();
+    if (saved && typeof saved.name === "string") myName = saved.name.trim();
+
+    var claude = window.claude;
+    if (!claude || typeof claude.use !== "function") {
+      return setMsg("fatal", "Diese Seite kann hier nicht gemeinsam speichern. Öffne sie über den Link.");
+    }
+    try {
+      db = await claude.use("db");
+      var user = await claude.use("user");
+      if (user) uid = await user.id();
+    } catch (e) { db = null; }
+
+    if (!db || !uid) {
+      return setMsg("fatal", "Gemeinsames Speichern ist gerade nicht verfügbar. Melde dich an und öffne die Seite erneut.");
+    }
+
+    if (saved && saved.code && /^[A-Z0-9]{6}$/.test(saved.code)) {
+      try {
+        var snap = await db.doc("groups/" + saved.code).get();
+        if (snap.exists) return enterGroup(saved.code, (snap.data() || {}).name || "");
+      } catch (e) { /* Gruppe nicht mehr erreichbar, Startansicht zeigen */ }
+    }
+    showStart();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
